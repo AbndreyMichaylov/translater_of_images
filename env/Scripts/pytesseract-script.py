@@ -1,4 +1,4 @@
-#!c:\users\cjcbc\desktop\projects\translater_of_images\env\scripts\python.exe
+#!c:\users\cjcbc\desktop\projects\bot_image_translater\env\scripts\python.exe
 # EASY-INSTALL-ENTRY-SCRIPT: 'pytesseract==0.3.7','console_scripts','pytesseract'
 import re
 import sys

@@ -37,7 +37,7 @@ deactivate () {
 # unset irrelevant variables
 deactivate nondestructive
 
-VIRTUAL_ENV="C:\Users\cjcbc\Desktop\projects\translater_of_images\env"
+VIRTUAL_ENV="C:\Users\cjcbc\Desktop\projects\bot_image_translater\env"
 export VIRTUAL_ENV
 
 _OLD_VIRTUAL_PATH="$PATH"
