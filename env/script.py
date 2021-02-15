@@ -9,13 +9,13 @@ import requests
 import uuid
 import path
 #from google.cloud import translate
-from translato
+from translate import Translator
 
 SAVE_PATH = 'C:/Users/cjcbc/Desktop/projects/bot_image_translater/not_translated_images/'
 TOKEN = '88c94357228fe11170d280783a866ff40d226334bcac34cf5edc8f2563c9aa1fb0f9df566b971f3813cfb'
 GROUP_ID = 202597974
 IMAGES_QUEUE = queue.Queue()
-CLIENT = translate.Client()
+CLIENT = Translator(from_lang='English', to_lang='Russian')
 
 #Парсит пришедший json
 def get_image_url(event_object):
@@ -57,7 +57,7 @@ for event in longpool.listen():
             
             #exit()
             try: 
-                translated = CLIENT.translate(result, dest='ru')
+                translated = CLIENT.translate(result)
                 vk.messages.send(user_id=event.object["from_id"],
                                  random_id=get_random_id(),
                                  message=translated)
