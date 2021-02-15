@@ -9,13 +9,25 @@ import requests
 import uuid
 import path
 #from google.cloud import translate
-from translate import Translator
+import requests
+import json
+
+
 
 SAVE_PATH = 'C:/Users/cjcbc/Desktop/projects/bot_image_translater/not_translated_images/'
 TOKEN = '88c94357228fe11170d280783a866ff40d226334bcac34cf5edc8f2563c9aa1fb0f9df566b971f3813cfb'
 GROUP_ID = 202597974
 IMAGES_QUEUE = queue.Queue()
-CLIENT = Translator(from_lang='English', to_lang='Russian')
+#CLIENT = Translator('af21c496f83c408db87b24912897b860')
+
+END_POINT = 'https://api.cognitive.microsofttranslator.com/translate?api-version=3.0'
+PARAM = '&from=en&to=ru'
+REQUEST_URL = END_POINT + PARAM
+
+
+session = vk_api.VkApi(token=TOKEN)
+longpool =  VkBotLongPoll(vk=session, group_id=GROUP_ID, wait=1)
+vk = session.get_api()
 
 #Парсит пришедший json
 def get_image_url(event_object):
@@ -32,10 +44,6 @@ def save_image_to_path(save_path, img_url):
 def make_queue_of_process_images(save_path):
     list_of_not_translated_images = os.listdir(save_path)
     return [path.Path('not_translated_images/' + i).abspath() for i in list_of_not_translated_images]
-
-session = vk_api.VkApi(token=TOKEN)
-longpool =  VkBotLongPoll(vk=session, group_id=GROUP_ID, wait=1)
-vk = session.get_api()
 
 for event in longpool.listen():
     if event.type == VkBotEventType.MESSAGE_NEW:
@@ -63,12 +71,27 @@ for event in longpool.listen():
             result = pytesseract.image_to_string(img, lang='eng')
             print(result)
             
+            HEADER = {
+                'Ocp-Apim-Subscription-Key': 'b4dd1f60dd00432fb552c9bbb1ce90b7',
+                'Content-type': 'application/json',
+                'X-ClientTraceId': str(uuid.uuid4()),
+                'Ocp-Apim-Subscription-Region' : 'eastus',
+            }
+
+            body = [{
+                'text' : result
+            }]
+
             #exit()
             try: 
-                translated = CLIENT.translate(result)
+                #translated = CLIENT.translate(result, to='rus')
+                request = requests.post(REQUEST_URL, headers=HEADER, json=body)
+                response = request.json()[0]['translations'][0]['text']
+                print(response)
+                #exit()
                 vk.messages.send(user_id=event.object["from_id"],
                                  random_id=get_random_id(),
-                                 message=translated)
+                                 message=response)
             except vk_api.exceptions.ApiError:
                 vk.messages.send(user_id=event.object["from_id"],
                                  random_id=get_random_id(),
