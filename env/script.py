@@ -21,11 +21,17 @@ CLIENT = Translator(from_lang='English', to_lang='Russian')
 def get_image_url(event_object):
     return event.object["attachments"][0]["photo"]["sizes"][-1]["url"]
 
+#Сохраняет изображение по урлу в папку по указанному пути
 def save_image_to_path(save_path, img_url):
     image = requests.get(img_url)
     random_name = str(uuid.uuid4()) + '.jpg'
     with open(save_path + random_name , 'wb') as f:
         f.write(image.content)
+
+#Создаёт список для очереди
+def make_queue_of_process_images(save_path):
+    list_of_not_translated_images = os.listdir(save_path)
+    return [path.Path('not_translated_images/' + i).abspath() for i in list_of_not_translated_images]
 
 session = vk_api.VkApi(token=TOKEN)
 longpool =  VkBotLongPoll(vk=session, group_id=GROUP_ID, wait=1)
@@ -40,8 +46,10 @@ for event in longpool.listen():
 
         list_of_not_translated_images = os.listdir(SAVE_PATH)
 
-        list_of_full_paths_of_files = [path.Path('not_translated_images/' + i).abspath() for i in list_of_not_translated_images]
+        list_of_full_paths_of_files = make_queue_of_process_images(SAVE_PATH)
+
         #print(list_of_full_paths_of_files)
+        #Заполняет очередь обработки изображений
         for image in list_of_full_paths_of_files:
             IMAGES_QUEUE.put(image)
 
