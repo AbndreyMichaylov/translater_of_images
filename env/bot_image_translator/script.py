@@ -8,17 +8,18 @@ from vk_api.utils import get_random_id
 import requests
 import uuid
 import path
-#from google.cloud import translate
 import requests
 import json
+import config_parser
 
 
+SAVE_PATH = config_parser.SAVE_PATH
+TOKEN = config_parser.TOKEN
+GROUP_ID = config_parser.GROUP_ID
+TESSERACT_OCR_PATH = config_parser.TESSERACT_OCR_PATH
 
-SAVE_PATH = 'C:/Users/cjcbc/Desktop/projects/bot_image_translater/not_translated_images/'
-TOKEN = '88c94357228fe11170d280783a866ff40d226334bcac34cf5edc8f2563c9aa1fb0f9df566b971f3813cfb'
-GROUP_ID = 202597974
 IMAGES_QUEUE = queue.Queue()
-#CLIENT = Translator('af21c496f83c408db87b24912897b860')
+
 
 END_POINT = 'https://api.cognitive.microsofttranslator.com/translate?api-version=3.0'
 PARAM = '&from=en&to=ru'
@@ -64,7 +65,7 @@ for event in longpool.listen():
         while not IMAGES_QUEUE.empty():
             image_to_process = IMAGES_QUEUE.get()
             
-            pytesseract.pytesseract.tesseract_cmd = 'C:/Program Files/Tesseract-OCR/tesseract'
+            pytesseract.pytesseract.tesseract_cmd = TESSERACT_OCR_PATH
 
             img = Image.open(image_to_process)
 
